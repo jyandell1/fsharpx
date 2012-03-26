@@ -11,7 +11,7 @@ open FSharpx.JSON
 
 // Generates type for an inferred JSON document
 let rec generateType (ownerType:ProvidedTypeDefinition) (CompoundProperty(elementName,multiProperty,elementChildren,elementProperties)) =
-    let ty = runtimeType<Document> elementName
+    let ty = runtimeType<Document> elementName |> isGenerated
     ownerType.AddMember(ty)
 
     let accessExpr propertyName propertyType (args: Expr list) = 
@@ -85,4 +85,4 @@ let jsonType (ownerType:TypeProviderForNamespaces) cfg =
 
     let createTypeFromFileName typeName = File.ReadAllText >> createTypeFromSchema typeName
 
-    createStructuredParser thisAssembly rootNamespace "StructuredJSON" cfg ownerType createTypeFromFileName createTypeFromSchema
+    generateStructuredParser thisAssembly rootNamespace "StructuredJSON" cfg ownerType createTypeFromFileName createTypeFromSchema

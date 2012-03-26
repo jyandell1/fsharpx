@@ -4,6 +4,12 @@ open NUnit.Framework
 open FSharpx
 open FsUnit
 
+type EmptyJSON = StructuredJSON<Schema="{}">
+
+[<Test>]
+let ``Can parse empty JSON``() = 
+    EmptyJSON().Root
+    
 type InlinedJSON = StructuredJSON<Schema="""{ "firstName": "Max" "lastName": "Mustermann" "age": 26 "isCool": true }""">
 
 [<Test>]

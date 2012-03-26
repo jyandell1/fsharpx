@@ -4,7 +4,8 @@ open NUnit.Framework
 open FSharpx
 open FsUnit
 
-let inlined = new StructuredXml<Schema="""<authors><author name="Ludwig" surname="Wittgenstein" /></authors>""">()
+type Inlined  = StructuredXml<Schema="""<authors><author name="Ludwig" surname="Wittgenstein" /></authors>""">
+let inlined = Inlined()
 
 [<Test>]
 let ``Can get author name in inlined xml``() = 
@@ -12,7 +13,8 @@ let ``Can get author name in inlined xml``() =
     author.Name |> should equal "Ludwig"
     author.Surname |> should equal "Wittgenstein"
 
-let philosophy = new StructuredXml<"Philosophy.xml">()
+type Philosophy = StructuredXml<"Philosophy.xml">
+let philosophy = Philosophy()
 let authors = philosophy.Root.GetAuthors() |> Seq.toList
 
 [<Test>]

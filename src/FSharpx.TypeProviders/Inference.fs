@@ -108,7 +108,7 @@ type GeneratedParserSettings = {
 
 /// Generates constructors for loading data and adds type representing Root node
 let createParserType<'a> typeName (generateTypeF: ProvidedTypeDefinition -> CompoundProperty -> ProvidedTypeDefinition) settings =
-    let parserType = erasedType<'a> thisAssembly rootNamespace typeName
+    let parserType = erasedType<'a> thisAssembly rootNamespace typeName |> isGenerated
     parserType
     |+!> (provideConstructor [] settings.EmptyConstructor
            |> addXmlDoc "Initializes the document from the schema sample.")

@@ -63,6 +63,10 @@ let inline addDefinitionLocation (filePosition:FilePosition) (definition: ^a) =
     (^a : (member AddDefinitionLocation: int*int*string -> unit) (definition,filePosition.Line,filePosition.Column,filePosition.FileName))
     definition
 
+let isGenerated (typeDef:ProvidedTypeDefinition) =    
+    typeDef.IsErased <- false
+    typeDef
+
 let runtimeType<'a> typeName = ProvidedTypeDefinition(typeName |> niceName, Some typeof<'a>)
 
 let eraseType assemblyName rootNamespace typeName toType = 
@@ -70,6 +74,10 @@ let eraseType assemblyName rootNamespace typeName toType =
 
 let erasedType<'a> assemblyName rootNamespace typeName = 
     eraseType assemblyName rootNamespace typeName typeof<'a>
+
+let convertToGenerated (assemblyFileName:string) (typeDef:ProvidedTypeDefinition) =
+    typeDef.ConvertToGenerated(assemblyFileName)
+    typeDef
 
 let literalField name (value:'a) =
     ProvidedLiteralField(niceName name, typeof<'a>, value)
@@ -171,9 +179,10 @@ let seqType ty = typedefof<seq<_>>.MakeGenericType[| ty |]
 let optionType ty = typedefof<option<_>>.MakeGenericType[| ty |]
 
 /// Generates a structured parser
-let createStructuredParser thisAssembly rootNamespace typeName (cfg:TypeProviderConfig) ownerType createTypeFromFileNameF createTypeFromSchemaF =
+let generateStructuredParser thisAssembly rootNamespace typeName (cfg:TypeProviderConfig) ownerType createTypeFromFileNameF createTypeFromSchemaF =
     let missingValue = "@@@missingValue###"
     erasedType<obj> thisAssembly rootNamespace typeName
+    |> isGenerated
     |> staticParameters 
           ["FileName" , typeof<string>, Some(missingValue :> obj)  // Parameterize the type by the file to use as a template
            "Schema" , typeof<string>, Some(missingValue :> obj)  ] // Allows to specify inlined schema
@@ -187,3 +196,4 @@ let createStructuredParser thisAssembly rootNamespace typeName (cfg:TypeProvider
                 | [| :? string; :? string as schema |] when schema <> missingValue ->        
                     createTypeFromSchemaF typeName schema
                 | _ -> failwith "You have to specify a filename or inlined Schema")
+    |> convertToGenerated @"C:\temp\FSharpx.TypeProviders.dll"

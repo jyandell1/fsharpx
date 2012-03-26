@@ -105,6 +105,7 @@ let createTypeFromReader typeName fileName schema (reader: TextReader) =
         Expr.Coerce(expr,node.NodeType)
 
     erasedType<XamlFile> thisAssembly rootNamespace typeName
+        |> isGenerated
         |> addDefinitionLocation root.Position
         |+!> (provideConstructor
                 [] 
@@ -128,4 +129,4 @@ let xamlType (ownerType:TypeProviderForNamespaces)  (cfg:TypeProviderConfig) =
         use reader = new StringReader(schema)
         createTypeFromReader typeName null schema reader
     
-    createStructuredParser thisAssembly rootNamespace "XAML" cfg ownerType createTypeFromFileName createTypeFromSchema
+    generateStructuredParser thisAssembly rootNamespace "XAML" cfg ownerType createTypeFromFileName createTypeFromSchema

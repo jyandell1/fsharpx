@@ -15,7 +15,7 @@ open System.Xml.Linq
 
 /// Generates type for an inferred XML element
 let rec generateType (ownerType:ProvidedTypeDefinition) (CompoundProperty(elementName,multi,elementChildren,elementProperties)) =
-    let ty = runtimeType<TypedXElement> elementName
+    let ty = runtimeType<TypedXElement> elementName |> isGenerated
     ownerType.AddMember(ty)
 
     let accessExpr propertyName propertyType (args: Expr list) = 
@@ -82,4 +82,4 @@ let xmlType (ownerType:TypeProviderForNamespaces) cfg =
     
     let createTypeFromFileName typeName = File.ReadAllText >> createTypeFromSchema typeName
 
-    createStructuredParser thisAssembly rootNamespace "StructuredXml" cfg ownerType createTypeFromFileName createTypeFromSchema
+    generateStructuredParser thisAssembly rootNamespace "StructuredXml" cfg ownerType createTypeFromFileName createTypeFromSchema
