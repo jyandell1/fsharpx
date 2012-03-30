@@ -42,3 +42,10 @@ open FSharpx.TypeProviders.Inference
 [<Test>]
 let ``Can infer floats``() = 
     isFloat "42.42" |> should equal true
+
+type G = GeneratedType
+
+[<Test>]
+let ``Can generate type``() = 
+    let t = G.Ty()
+    t.AddOne(7) |> should equal 8
